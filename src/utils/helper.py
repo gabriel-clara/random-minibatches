@@ -89,11 +89,8 @@ def get_sigma_d(probabilities, weight_distribution, batch_size):
     """
     Compute covariance of squared weighting matrix
     """
-    if batch_size != 'random' and batch_size > 1:
 
-        raise ValueError(f"Only mini-batch sizes 1 and 'random' are implemented so far!")
-
-    elif weight_distribution == 'noiseless':
+    if weight_distribution == 'noiseless':
 
         return np.eye(probabilities.shape[0])
 
@@ -104,6 +101,19 @@ def get_sigma_d(probabilities, weight_distribution, batch_size):
     elif batch_size == 1 and weight_distribution == 'bernoulli':
 
         return np.diag(probabilities) - np.outer(probabilities, probabilities)
+
+    elif batch_size > 1 and weight_distribution == 'bernoulli':
+
+        # Compute Monte Carlo estimate of covariance
+        exp_vec = np.diag(get_M2(probabilities, weight_distribution, batch_size))
+        mc_sig = np.zeros((probabilities.shape[0], probabilities.shape[0]))
+
+        for m in range(1000):
+
+            mc_D = np.diag(get_D_matrix(probabilities, weight_distribution, batch_size))
+            mc_sig += np.outer(mc_D, mc_D) / 1000
+
+        return mc_sig - np.outer(exp_vec, exp_vec)
 
     else:
 

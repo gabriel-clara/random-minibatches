@@ -4,13 +4,13 @@ from weighted_gd import WeightedGD
 
 def main():
     # Generate synthetic data
-    np.random.seed(31012)
-    n_samples = 10
+    np.random.seed(31842)
+    n_samples = 25
     n_features = 50
 
-    n_iterations = 200
-    n_simulations = 1000
-    batch_size = 1 # set this to some integer to specify batch-size, or choose 'random' to get independently active data points
+    n_iterations = 500
+    n_simulations = 50
+    batch_size = 5 # set this to some integer to specify batch-size, or choose 'random' to get independently active data points
     weight_distribution = 'bernoulli'
     initialization = 'orthogonal'
     alpha = 0.01
@@ -30,13 +30,13 @@ def main():
 
     # Set diagonal elements to random normal with probability p
     for i in range(min(n_samples, n_features)):
-        sigma[i,i] = np.random.binomial(1, p = 0.3) * np.abs(5 + np.random.randn())
+        sigma[i,i] = np.random.binomial(1, p = 0.2) * np.abs(5 + np.random.randn())
 
     X = Q @ sigma @ S
     X = X # / np.linalg.norm(X, ord=2)
 
     # Generate true weights
-    w_true = 0.5 * np.random.randn(n_features, 1)
+    w_true = np.random.randn(n_features, 1)
     noise = np.random.randn(n_samples, 1)
     Y = X @ w_true + noise
 
